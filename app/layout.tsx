@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: 'Карта Инфраструктуры',
     description:
       'Интерактивная визуализация инфраструктуры государственных систем мониторинга, контроля и обмена данными в формате карты метро.',
-    images: ['/placeholder-logo.png'],
+    images: ['/og.jpg'],
   },
   icons: {
     icon: [
