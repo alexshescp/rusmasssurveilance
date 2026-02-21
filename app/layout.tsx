@@ -28,9 +28,8 @@ const aboutName = `${lineCount} линий, ${stationCount} станций`;
 const aboutDescription = `Является картографическим представлением ${lineCount} направлений и более ${stationCount} объектов.`;
 
 export const metadata: Metadata = {
-  title: 'Карта Инфраструктуры | Системы мониторинга и контроля',
+  title: 'Карта инфраструктуры системы мониторинга и контроля РФ',
   description: 'Интерактивная визуализация инфраструктуры государственных систем мониторинга, контроля и обмена данными в формате карты метро.',
-  generator: 'v0.app',
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
@@ -41,10 +40,10 @@ export const metadata: Metadata = {
     // image can be replaced with a real og image; fallback to placeholder
     images: [
       {
-        url: '/placeholder-logo.png',
+        url: '/og.jpg',
         width: 1200,
         height: 630,
-        alt: 'Интерактивная карта метро инфраструктуры',
+        alt: 'Интерактивная карта инфраструктуры массовой слежки и контроля в России.',
       },
     ],
   },
@@ -77,6 +76,9 @@ export const metadata: Metadata = {
     ],
   },
 }
+
+// ensure the entire app is rendered statically
+export const dynamic = 'force-static';
 
 export default function RootLayout({
   children,

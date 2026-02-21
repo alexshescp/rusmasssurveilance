@@ -5,6 +5,9 @@ import { CentralHubSection } from "@/components/central-hub"
 import { LineDetails } from "@/components/line-details"
 import { ConnectionsSection } from "@/components/connections-section"
 
+// make this page static
+export const dynamic = 'force-static';
+
 export default function Page() {
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-background">
