@@ -2,6 +2,11 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import Script from 'next/script'
+
+// bring the line data into the layout so that SEO snippets can reflect
+// actual counts and descriptions; `linesData` is defined in lib/lines.ts
+import { linesData } from '@/lib/lines'
 
 const _inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 const _jetbrains = JetBrains_Mono({ subsets: ["latin", "cyrillic"], variable: "--font-jetbrains" });
@@ -10,10 +15,46 @@ export const viewport: Viewport = {
   themeColor: '#ffffff',
 }
 
+// base URL used by the metadata API; override with NEXT_PUBLIC_BASE_URL
+export const metadataBase = new URL(
+  process.env.NEXT_PUBLIC_BASE_URL || 'https://example.com'
+);
+
+// compute a few summary values for metadata/JSON‑LD
+const lineCount = linesData.length;
+const stationCount = linesData.reduce((s, l) => s + l.stations.length, 0);
+// precompute strings to avoid confusing the parser inside JSX
+const aboutName = `${lineCount} линий, ${stationCount} станций`;
+const aboutDescription = `Является картографическим представлением ${lineCount} направлений и более ${stationCount} объектов.`;
+
 export const metadata: Metadata = {
   title: 'Карта Инфраструктуры | Системы мониторинга и контроля',
   description: 'Интерактивная визуализация инфраструктуры государственных систем мониторинга, контроля и обмена данными в формате карты метро.',
   generator: 'v0.app',
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    siteName: 'Карта Инфраструктуры',
+    title: 'Карта Инфраструктуры | Системы мониторинга и контроля',
+    description:
+      'Интерактивная визуализация инфраструктуры государственных систем мониторинга, контроля и обмена данными в формате карты метро.',
+    // image can be replaced with a real og image; fallback to placeholder
+    images: [
+      {
+        url: '/placeholder-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Интерактивная карта метро инфраструктуры',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Карта Инфраструктуры',
+    description:
+      'Интерактивная визуализация инфраструктуры государственных систем мониторинга, контроля и обмена данными в формате карты метро.',
+    images: ['/placeholder-logo.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -34,11 +75,6 @@ export const metadata: Metadata = {
       { url: '/apple-icon-152x152.png', sizes: '152x152' },
       { url: '/apple-icon-180x180.png', sizes: '180x180' },
     ],
-    other: [
-      { rel: 'manifest', url: '/manifest.json' },
-      { rel: 'msapplication-TileColor', color: '#ffffff' },
-      { rel: 'msapplication-TileImage', url: '/ms-icon-144x144.png' },
-    ],
   },
 }
 
@@ -52,6 +88,33 @@ export default function RootLayout({
       <head>
         {/* Favicons and touch icons provided by the user */}
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
+        {/* structured data for search engines */}
+        {/* use Next.js Script with afterInteractive to avoid SSR/client mismatch in dev */}
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              url: metadataBase.href,
+              name: metadata.title,
+              description: metadata.description,
+              // include some of the site-specific numbers
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${metadataBase.href}?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+              about: {
+                "@type": "Thing",
+                name: aboutName,
+                description: aboutDescription,
+              },
+            }),
+          }}
+        />
         <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
         <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
         <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png" />
